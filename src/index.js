@@ -1,6 +1,7 @@
-function insertAfter(referenceNode, newNode) {
-  referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-}
+/* global document */
+/* global window */
+
+import insertAfter from './utils';
 
 class FilterPlayer {
   constructor(target, filter) {
@@ -40,7 +41,7 @@ class FilterPlayer {
   render() {
     this.renderFrame();
     window.requestAnimationFrame(() => {
-      this.render()
+      this.render();
     });
   }
 
@@ -53,14 +54,16 @@ class FilterPlayer {
   getData() {
     this.framebufferCtx.drawImage(
       this.video,
-      0, 0,
-      this.video.videoWidth, this.video.videoHeight,
-      0, 0,
-      this.width, this.height
+      0,
+      0,
+      this.video.videoWidth,
+      this.video.videoHeight,
+      0,
+      0,
+      this.width,
+      this.height,
     );
-    return this.framebufferCtx.getImageData(
-      0, 0, this.width, this.height
-    );
+    return this.framebufferCtx.getImageData(0, 0, this.width, this.height);
   }
 
   transform(data) {
@@ -71,3 +74,5 @@ class FilterPlayer {
     this.canvasCtx.putImageData(data, 0, 0);
   }
 }
+
+window.FilterPlayer = FilterPlayer;
