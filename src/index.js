@@ -7,7 +7,7 @@ class FilterPlayer {
     this.video = document.getElementById(target);
     this.initFrameBuffer();
     this.initCanvas();
-    this.setSize();
+    this.setCanvasSize();
 
     this.filter = filter;
 
@@ -19,18 +19,16 @@ class FilterPlayer {
 
   initFrameBuffer() {
     this.framebuffer = document.createElement('canvas');
-    this.framebuffer.style.display = 'none';
     this.framebufferCtx = this.framebuffer.getContext('2d');
-    insertAfter(this.video, this.framebuffer);
   }
 
   initCanvas() {
     this.canvas = document.createElement('canvas');
     this.canvasCtx = this.canvas.getContext('2d');
-    insertAfter(this.framebuffer, this.canvas);
+    insertAfter(this.video, this.canvas);
   }
 
-  setSize() {
+  setCanvasSize() {
     this.width = this.video.clientWidth;
     this.height = this.video.clientHeight;
     this.canvas.setAttribute('width', this.width);
