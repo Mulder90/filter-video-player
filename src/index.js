@@ -1,8 +1,8 @@
 function insertAfter(referenceNode, newNode) {
-    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+  referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 }
 
-class CanvasPlayer {
+class FilterPlayer {
   constructor(target, filter) {
     this.video = document.getElementById(target);
     this.initFrameBuffer();
