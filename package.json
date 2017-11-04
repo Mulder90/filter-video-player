@@ -23,5 +23,12 @@
     "eslint-plugin-react": "^7.4.0",
     "prettier-eslint": "^8.2.1",
     "webpack": "^3.8.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mulder90/filter-video-player.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Mulder90/filter-video-player/issues"
   }
 }
