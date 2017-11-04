@@ -3,10 +3,13 @@ const path = require('path');
 const PROD = process.env.NODE_ENV === 'production';
 
 module.exports = {
-  entry: './src/index.js',
+  entry: {
+    bundle: './src/index.js',
+    filters: './src/filters.js',
+  },
   output: {
-    filename: PROD ? 'bundle.min.js' : 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
+    filename: PROD ? '[name].min.js' : '[name].js',
   },
   module: {
     loaders: [

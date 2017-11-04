@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Canvas Video Player with filters</title>
+    <title>A simple canvas video player with prebuilt filters</title>
     <link href="style.css" rel="stylesheet">
   </head>
   <body>
@@ -11,21 +11,10 @@
         <source src="./trailer.mp4" type='video/mp4'>
       </video>
     </div>
+    <script src="../dist/filters.js"></script>
     <script src="../dist/bundle.js"></script>
     <script>
-      function negative(pixels) {
-        const data = pixels.data;
-        for (let i = 0; i < data.length; i += 4) {
-          const r = data[i];
-          const g = data[i + 1];
-          const b = data[i + 2];
-          data[i] =     255 - r;
-          data[i + 1] = 255 - g;
-          data[i + 2] = 255 - b;
-        }
-      }
-
-      new FilterPlayer('video', negative);
+      new FVPlayer('video', FVPFilters.negative);
     </script>
   </body>
 </html>

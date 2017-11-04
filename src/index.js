@@ -1,19 +1,18 @@
 /* global document */
 /* global window */
 
-import insertAfter from './utils';
+import { insertAfter } from './utils';
 
-class FilterPlayer {
-  constructor(target, filter) {
+class FVPlayer {
+  constructor(target, filteringFn) {
     this.video = document.getElementById(target);
     this.initFrameBuffer();
     this.initCanvas();
     this.setCanvasSize();
 
-    this.filter = filter;
+    this.filteringFn = filteringFn;
 
     this.video.addEventListener('play', () => {
-      // this.video.style.display = 'none';
       this.render();
     });
   }
@@ -47,8 +46,8 @@ class FilterPlayer {
 
   renderFrame() {
     const data = this.getData();
-    this.transform(data);
-    this.draw(data);
+    this.filteringFn(data);
+    this.canvasCtx.putImageData(data, 0, 0);
   }
 
   getData() {
@@ -65,14 +64,6 @@ class FilterPlayer {
     );
     return this.framebufferCtx.getImageData(0, 0, this.width, this.height);
   }
-
-  transform(data) {
-    this.filter(data);
-  }
-
-  draw(data) {
-    this.canvasCtx.putImageData(data, 0, 0);
-  }
 }
 
-window.FilterPlayer = FilterPlayer;
+window.FVPlayer = FVPlayer;

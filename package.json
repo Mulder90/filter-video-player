@@ -1,7 +1,7 @@
 {
-  "name": "filter-player",
+  "name": "filter-video-player",
   "version": "0.0.1",
-  "description": "A simple canvas video player with filters",
+  "description": "A simple canvas video player with prebuilt filters",
   "main": "dist/bundle.js",
   "scripts": {
     "dev": "NODE_ENV='development' webpack",

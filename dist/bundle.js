@@ -70,36 +70,32 @@
 "use strict";
 
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* global document */
+/* global window */
 
 var _utils = __webpack_require__(1);
 
-var _utils2 = _interopRequireDefault(_utils);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var FilterPlayer = function () {
-  function FilterPlayer(target, filter) {
+var FVPlayer = function () {
+  function FVPlayer(target, filteringFn) {
     var _this = this;
 
-    _classCallCheck(this, FilterPlayer);
+    _classCallCheck(this, FVPlayer);
 
     this.video = document.getElementById(target);
     this.initFrameBuffer();
     this.initCanvas();
     this.setCanvasSize();
 
-    this.filter = filter;
+    this.filteringFn = filteringFn;
 
     this.video.addEventListener('play', function () {
-      // this.video.style.display = 'none';
       _this.render();
     });
   }
 
-  _createClass(FilterPlayer, [{
+  _createClass(FVPlayer, [{
     key: 'initFrameBuffer',
     value: function initFrameBuffer() {
       this.framebuffer = document.createElement('canvas');
@@ -110,7 +106,7 @@ var FilterPlayer = function () {
     value: function initCanvas() {
       this.canvas = document.createElement('canvas');
       this.canvasCtx = this.canvas.getContext('2d');
-      (0, _utils2.default)(this.video, this.canvas);
+      (0, _utils.insertAfter)(this.video, this.canvas);
     }
   }, {
     key: 'setCanvasSize',
@@ -136,8 +132,8 @@ var FilterPlayer = function () {
     key: 'renderFrame',
     value: function renderFrame() {
       var data = this.getData();
-      this.transform(data);
-      this.draw(data);
+      this.filteringFn(data);
+      this.canvasCtx.putImageData(data, 0, 0);
     }
   }, {
     key: 'getData',
@@ -145,22 +141,12 @@ var FilterPlayer = function () {
       this.framebufferCtx.drawImage(this.video, 0, 0, this.video.videoWidth, this.video.videoHeight, 0, 0, this.width, this.height);
       return this.framebufferCtx.getImageData(0, 0, this.width, this.height);
     }
-  }, {
-    key: 'transform',
-    value: function transform(data) {
-      this.filter(data);
-    }
-  }, {
-    key: 'draw',
-    value: function draw(data) {
-      this.canvasCtx.putImageData(data, 0, 0);
-    }
   }]);
 
-  return FilterPlayer;
+  return FVPlayer;
 }();
 
-window.FilterPlayer = FilterPlayer;
+window.FVPlayer = FVPlayer;
 
 /***/ }),
 /* 1 */
@@ -176,7 +162,7 @@ function insertAfter(referenceNode, newNode) {
   referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 }
 
-exports.default = insertAfter;
+exports.insertAfter = insertAfter;
 
 /***/ })
 /******/ ]);
