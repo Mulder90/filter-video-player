@@ -13,7 +13,7 @@ class FVPlayer {
 
   bindVideoPlayerEvents() {
     this.video.addEventListener('canplay', () => {
-      if (!this.ended) {
+      if (!this.ended && !this.playing) {
         this.playing = false;
         this.started = false;
         this.ended = false;
