@@ -5,8 +5,15 @@
 import { insertAfter } from './utils';
 
 class FVPlayer {
-  constructor(target, filteringFn) {
+  constructor(
+    target,
+    filteringFn,
+    options = {
+      hideVideo: true,
+    },
+  ) {
     this.filteringFn = filteringFn;
+    this.options = options;
     this.video = document.getElementById(target);
     this.bindVideoPlayerEvents();
   }
@@ -21,7 +28,9 @@ class FVPlayer {
         this.initCanvas();
         this.setCanvasSize();
         this.setPoster();
-        this.video.style.display = 'none';
+        if (this.options.hideVideo) {
+          this.video.style.display = 'none';
+        }
         this.addCanvasHandlers();
       }
     });
