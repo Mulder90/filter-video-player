@@ -80,9 +80,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var FVPlayer = function () {
   function FVPlayer(target, filteringFn) {
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {
+      hideVideo: true
+    };
+
     _classCallCheck(this, FVPlayer);
 
     this.filteringFn = filteringFn;
+    this.options = options;
     this.video = document.getElementById(target);
     this.bindVideoPlayerEvents();
   }
@@ -98,10 +103,12 @@ var FVPlayer = function () {
           _this.started = false;
           _this.ended = false;
           _this.initFrameBuffer();
-          _this.initCanvas();
+          _this.initCanvasPlayer();
           _this.setCanvasSize();
           _this.setPoster();
-          _this.video.style.display = 'none';
+          if (_this.options.hideVideo) {
+            _this.video.style.display = 'none';
+          }
           _this.addCanvasHandlers();
         }
       });
@@ -109,12 +116,24 @@ var FVPlayer = function () {
       this.video.addEventListener('play', function () {
         _this.started = true;
         _this.playing = true;
+        if (!(0, _utils.hasClass)(_this.container, 'is-started')) {
+          (0, _utils.addClass)(_this.container, 'is-started');
+        }
+
+        if ((0, _utils.hasClass)(_this.container, 'is-ended')) {
+          (0, _utils.removeClass)(_this.container, 'is-ended');
+        }
+
+        (0, _utils.removeClass)(_this.container, 'is-paused');
+        (0, _utils.addClass)(_this.container, 'is-playing');
         _this.play();
       });
 
       this.video.addEventListener('pause', function () {
-        _this.playing = false;
         window.cancelAnimationFrame(_this.requestAnimationFrameID);
+        _this.playing = false;
+        (0, _utils.removeClass)(_this.container, 'is-playing');
+        (0, _utils.addClass)(_this.container, 'is-paused');
       });
 
       this.video.addEventListener('ended', function () {
@@ -122,6 +141,10 @@ var FVPlayer = function () {
         _this.ended = true;
         _this.playing = false;
         _this.started = false;
+        (0, _utils.removeClass)(_this.container, 'is-playing');
+        (0, _utils.removeClass)(_this.container, 'is-paused');
+        (0, _utils.removeClass)(_this.container, 'is-started');
+        (0, _utils.addClass)(_this.container, 'is-ended');
         _this.setPoster();
       });
     }
@@ -145,11 +168,29 @@ var FVPlayer = function () {
       this.framebufferCtx = this.framebuffer.getContext('2d');
     }
   }, {
-    key: 'initCanvas',
-    value: function initCanvas() {
+    key: 'initCanvasPlayer',
+    value: function initCanvasPlayer() {
+      this.container = document.createElement('div');
+      (0, _utils.addClass)(this.container, 'fvplayer-container');
+      (0, _utils.addClass)(this.container, 'is-paused');
+      if (this.video.controls) {
+        (0, _utils.addClass)(this.container, 'controls-enabled');
+      }
+
+      this.bigPlayButton = document.createElement('button');
+      (0, _utils.addClass)(this.bigPlayButton, 'fvplayer-big-play-button');
+      this.container.appendChild(this.bigPlayButton);
+
       this.canvas = document.createElement('canvas');
       this.canvasCtx = this.canvas.getContext('2d');
-      (0, _utils.insertAfter)(this.video, this.canvas);
+      (0, _utils.addClass)(this.canvas, 'fvplayer-canvas');
+      this.container.appendChild(this.canvas);
+
+      this.controls = document.createElement('div');
+      (0, _utils.addClass)(this.controls, 'fvplayer-controls');
+      (0, _utils.insertAfter)(this.canvas, this.controls);
+
+      (0, _utils.insertAfter)(this.video, this.container);
     }
   }, {
     key: 'setCanvasSize',
@@ -160,6 +201,8 @@ var FVPlayer = function () {
       this.canvas.setAttribute('height', this.height);
       this.framebuffer.setAttribute('width', this.width);
       this.framebuffer.setAttribute('height', this.height);
+      this.container.style.width = this.width + 'px';
+      this.container.style.height = this.height + 'px';
     }
   }, {
     key: 'setPoster',
@@ -226,7 +269,22 @@ function insertAfter(referenceNode, newNode) {
   referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 }
 
+function addClass(element, className) {
+  element.classList.add(className);
+}
+
+function removeClass(element, className) {
+  element.classList.remove(className);
+}
+
+function hasClass(element, className) {
+  return element.classList.contains(className);
+}
+
 exports.insertAfter = insertAfter;
+exports.addClass = addClass;
+exports.removeClass = removeClass;
+exports.hasClass = hasClass;
 
 /***/ })
 /******/ ]);
