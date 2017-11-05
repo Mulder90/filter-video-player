@@ -1,19 +1,58 @@
 /* global document */
 /* global window */
+/* global Image */
 
 import { insertAfter } from './utils';
 
 class FVPlayer {
   constructor(target, filteringFn) {
-    this.video = document.getElementById(target);
-    this.initFrameBuffer();
-    this.initCanvas();
-    this.setCanvasSize();
-
     this.filteringFn = filteringFn;
+    this.video = document.getElementById(target);
+    this.bindVideoPlayerEvents();
+  }
+
+  bindVideoPlayerEvents() {
+    this.video.addEventListener('canplay', () => {
+      if (!this.ended) {
+        this.playing = false;
+        this.started = false;
+        this.ended = false;
+        this.initFrameBuffer();
+        this.initCanvas();
+        this.setCanvasSize();
+        this.setPoster();
+        this.video.style.display = 'none';
+        this.addCanvasHandlers();
+      }
+    });
 
     this.video.addEventListener('play', () => {
-      this.render();
+      this.started = true;
+      this.playing = true;
+      this.play();
+    });
+
+    this.video.addEventListener('pause', () => {
+      this.playing = false;
+      window.cancelAnimationFrame(this.requestAnimationFrameID);
+    });
+
+    this.video.addEventListener('ended', () => {
+      window.cancelAnimationFrame(this.requestAnimationFrameID);
+      this.ended = true;
+      this.playing = false;
+      this.started = false;
+      this.setPoster();
+    });
+  }
+
+  addCanvasHandlers() {
+    this.canvas.addEventListener('click', () => {
+      if (this.playing) {
+        this.video.pause();
+      } else {
+        this.video.play();
+      }
     });
   }
 
@@ -37,22 +76,39 @@ class FVPlayer {
     this.framebuffer.setAttribute('height', this.height);
   }
 
-  render() {
+  setPoster() {
+    const { poster } = this.video;
+    if (poster.length > 0) {
+      if (!this.posterImage) {
+        this.posterImage = new Image(this.width, this.height);
+        this.posterImage.addEventListener('load', () => {
+          if (!this.started) {
+            this.renderFrame(this.posterImage);
+          }
+        });
+        this.posterImage.src = poster;
+      } else {
+        this.renderFrame(this.posterImage);
+      }
+    }
+  }
+
+  play() {
     this.renderFrame();
-    window.requestAnimationFrame(() => {
-      this.render();
+    this.requestAnimationFrameID = window.requestAnimationFrame(() => {
+      this.play();
     });
   }
 
-  renderFrame() {
-    const data = this.getData();
+  renderFrame(image) {
+    const data = this.getData(image);
     this.filteringFn(data);
     this.canvasCtx.putImageData(data, 0, 0);
   }
 
-  getData() {
+  getData(image) {
     this.framebufferCtx.drawImage(
-      this.video,
+      image || this.video,
       0,
       0,
       this.video.videoWidth,

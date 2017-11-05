@@ -2,3 +2,8 @@ video {
   height: 360px;
   width: 640px;
 }
+
+canvas {
+  background: black;
+  cursor: pointer;
+}
