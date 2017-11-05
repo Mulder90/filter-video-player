@@ -93,7 +93,7 @@ var FVPlayer = function () {
       var _this = this;
 
       this.video.addEventListener('canplay', function () {
-        if (!_this.ended) {
+        if (!_this.ended && !_this.playing) {
           _this.playing = false;
           _this.started = false;
           _this.ended = false;
