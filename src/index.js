@@ -2,7 +2,7 @@
 /* global window */
 /* global Image */
 
-import { insertAfter } from './utils';
+import { insertAfter, addClass, removeClass, hasClass } from './utils';
 
 class FVPlayer {
   constructor(
@@ -25,7 +25,7 @@ class FVPlayer {
         this.started = false;
         this.ended = false;
         this.initFrameBuffer();
-        this.initCanvas();
+        this.initCanvasPlayer();
         this.setCanvasSize();
         this.setPoster();
         if (this.options.hideVideo) {
@@ -38,12 +38,24 @@ class FVPlayer {
     this.video.addEventListener('play', () => {
       this.started = true;
       this.playing = true;
+      if (!hasClass(this.container, 'is-started')) {
+        addClass(this.container, 'is-started');
+      }
+
+      if (hasClass(this.container, 'is-ended')) {
+        removeClass(this.container, 'is-ended');
+      }
+
+      removeClass(this.container, 'is-paused');
+      addClass(this.container, 'is-playing');
       this.play();
     });
 
     this.video.addEventListener('pause', () => {
-      this.playing = false;
       window.cancelAnimationFrame(this.requestAnimationFrameID);
+      this.playing = false;
+      removeClass(this.container, 'is-playing');
+      addClass(this.container, 'is-paused');
     });
 
     this.video.addEventListener('ended', () => {
@@ -51,6 +63,10 @@ class FVPlayer {
       this.ended = true;
       this.playing = false;
       this.started = false;
+      removeClass(this.container, 'is-playing');
+      removeClass(this.container, 'is-paused');
+      removeClass(this.container, 'is-started');
+      addClass(this.container, 'is-ended');
       this.setPoster();
     });
   }
@@ -70,10 +86,28 @@ class FVPlayer {
     this.framebufferCtx = this.framebuffer.getContext('2d');
   }
 
-  initCanvas() {
+  initCanvasPlayer() {
+    this.container = document.createElement('div');
+    addClass(this.container, 'fvplayer-container');
+    addClass(this.container, 'is-paused');
+    if (this.video.controls) {
+      addClass(this.container, 'controls-enabled');
+    }
+
+    this.bigPlayButton = document.createElement('button');
+    addClass(this.bigPlayButton, 'fvplayer-big-play-button');
+    this.container.appendChild(this.bigPlayButton);
+
     this.canvas = document.createElement('canvas');
     this.canvasCtx = this.canvas.getContext('2d');
-    insertAfter(this.video, this.canvas);
+    addClass(this.canvas, 'fvplayer-canvas');
+    this.container.appendChild(this.canvas);
+
+    this.controls = document.createElement('div');
+    addClass(this.controls, 'fvplayer-controls');
+    insertAfter(this.canvas, this.controls);
+
+    insertAfter(this.video, this.container);
   }
 
   setCanvasSize() {
@@ -83,6 +117,8 @@ class FVPlayer {
     this.canvas.setAttribute('height', this.height);
     this.framebuffer.setAttribute('width', this.width);
     this.framebuffer.setAttribute('height', this.height);
+    this.container.style.width = `${this.width}px`;
+    this.container.style.height = `${this.height}px`;
   }
 
   setPoster() {

@@ -1,9 +1,62 @@
 video {
-  height: 360px;
   width: 640px;
+  height: 360px;
 }
 
-canvas {
+/* fvplayer style */
+
+.fvplayer-container {
+  position: relative;
+}
+
+.fvplayer-big-play-button {
+  cursor: pointer;
+  left: 50%;
+  top: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  width: 40px;
+  height: 40px;
+  background-color: rgba(43, 51, 63, 0.4);
+  border: 0;
+}
+
+.fvplayer-big-play-button::before {
+  content: '\f04b';
+  text-align: center;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  color: white;
+  font-family: 'FontAwesome';
+  font-size: large;
+}
+
+.fvplayer-container:hover .fvplayer-big-play-button {
+  background-color: rgba(43, 51, 63, 0.7);
+}
+
+.fvplayer-container.is-ended .fvplayer-big-play-button,
+.fvplayer-container.is-paused .fvplayer-big-play-button {
+  display: block;
+}
+
+.fvplayer-container.is-playing .fvplayer-big-play-button {
+  display: none;
+}
+
+.fvplayer-canvas {
   background: black;
   cursor: pointer;
+}
+
+.fvplayer-controls {
+  display: none;
+  position: absolute;
+}
+
+.fvplayer-container.controls-enabled .fvplayer-controls {
+  display: block;
 }
