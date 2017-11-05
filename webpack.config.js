@@ -4,8 +4,8 @@ const PROD = process.env.NODE_ENV === 'production';
 
 module.exports = {
   entry: {
-    bundle: './src/index.js',
-    filters: './src/filters.js',
+    fvplayer: './src/index.js',
+    fvfilters: './src/filters.js',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),

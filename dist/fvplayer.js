@@ -72,6 +72,7 @@
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* global document */
 /* global window */
+/* global Image */
 
 var _utils = __webpack_require__(1);
 
@@ -79,23 +80,65 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var FVPlayer = function () {
   function FVPlayer(target, filteringFn) {
-    var _this = this;
-
     _classCallCheck(this, FVPlayer);
 
-    this.video = document.getElementById(target);
-    this.initFrameBuffer();
-    this.initCanvas();
-    this.setCanvasSize();
-
     this.filteringFn = filteringFn;
-
-    this.video.addEventListener('play', function () {
-      _this.render();
-    });
+    this.video = document.getElementById(target);
+    this.bindVideoPlayerEvents();
   }
 
   _createClass(FVPlayer, [{
+    key: 'bindVideoPlayerEvents',
+    value: function bindVideoPlayerEvents() {
+      var _this = this;
+
+      this.video.addEventListener('canplay', function () {
+        if (!_this.ended) {
+          _this.playing = false;
+          _this.started = false;
+          _this.ended = false;
+          _this.initFrameBuffer();
+          _this.initCanvas();
+          _this.setCanvasSize();
+          _this.setPoster();
+          _this.video.style.display = 'none';
+          _this.addCanvasHandlers();
+        }
+      });
+
+      this.video.addEventListener('play', function () {
+        _this.started = true;
+        _this.playing = true;
+        _this.play();
+      });
+
+      this.video.addEventListener('pause', function () {
+        _this.playing = false;
+        window.cancelAnimationFrame(_this.requestAnimationFrameID);
+      });
+
+      this.video.addEventListener('ended', function () {
+        window.cancelAnimationFrame(_this.requestAnimationFrameID);
+        _this.ended = true;
+        _this.playing = false;
+        _this.started = false;
+        _this.setPoster();
+      });
+    }
+  }, {
+    key: 'addCanvasHandlers',
+    value: function addCanvasHandlers() {
+      var _this2 = this;
+
+      this.canvas.addEventListener('click', function () {
+        if (_this2.playing) {
+          _this2.video.pause();
+        } else {
+          _this2.video.play();
+        }
+      });
+    }
+  }, {
     key: 'initFrameBuffer',
     value: function initFrameBuffer() {
       this.framebuffer = document.createElement('canvas');
@@ -119,26 +162,47 @@ var FVPlayer = function () {
       this.framebuffer.setAttribute('height', this.height);
     }
   }, {
-    key: 'render',
-    value: function render() {
-      var _this2 = this;
+    key: 'setPoster',
+    value: function setPoster() {
+      var _this3 = this;
+
+      var poster = this.video.poster;
+
+      if (poster.length > 0) {
+        if (!this.posterImage) {
+          this.posterImage = new Image(this.width, this.height);
+          this.posterImage.addEventListener('load', function () {
+            if (!_this3.started) {
+              _this3.renderFrame(_this3.posterImage);
+            }
+          });
+          this.posterImage.src = poster;
+        } else {
+          this.renderFrame(this.posterImage);
+        }
+      }
+    }
+  }, {
+    key: 'play',
+    value: function play() {
+      var _this4 = this;
 
       this.renderFrame();
-      window.requestAnimationFrame(function () {
-        _this2.render();
+      this.requestAnimationFrameID = window.requestAnimationFrame(function () {
+        _this4.play();
       });
     }
   }, {
     key: 'renderFrame',
-    value: function renderFrame() {
-      var data = this.getData();
+    value: function renderFrame(image) {
+      var data = this.getData(image);
       this.filteringFn(data);
       this.canvasCtx.putImageData(data, 0, 0);
     }
   }, {
     key: 'getData',
-    value: function getData() {
-      this.framebufferCtx.drawImage(this.video, 0, 0, this.video.videoWidth, this.video.videoHeight, 0, 0, this.width, this.height);
+    value: function getData(image) {
+      this.framebufferCtx.drawImage(image || this.video, 0, 0, this.video.videoWidth, this.video.videoHeight, 0, 0, this.width, this.height);
       return this.framebufferCtx.getImageData(0, 0, this.width, this.height);
     }
   }]);
