@@ -74,41 +74,38 @@
 /* global window */
 
 var FVPFilters = {
-  negative: function negative(pixels) {
-    var data = pixels.data;
-
-    for (var i = 0; i < data.length; i += 4) {
-      var r = data[i];
-      var g = data[i + 1];
-      var b = data[i + 2];
-      data[i] = 255 - r;
-      data[i + 1] = 255 - g;
-      data[i + 2] = 255 - b;
+  negative: function negative(data) {
+    var pixels = data.data;
+    for (var i = 0; i < pixels.length; i += 4) {
+      var r = pixels[i];
+      var g = pixels[i + 1];
+      var b = pixels[i + 2];
+      pixels[i] = 255 - r;
+      pixels[i + 1] = 255 - g;
+      pixels[i + 2] = 255 - b;
     }
   },
-  greyscale: function greyscale(pixels) {
-    var data = pixels.data;
-
-    for (var i = 0; i < data.length; i += 4) {
-      var r = data[i];
-      var g = data[i + 1];
-      var b = data[i + 2];
+  greyscale: function greyscale(data) {
+    var pixels = data.data;
+    for (var i = 0; i < pixels.length; i += 4) {
+      var r = pixels[i];
+      var g = pixels[i + 1];
+      var b = pixels[i + 2];
       var avg = 0.3 * r + 0.59 * g + 0.11 * b;
-      data[i] = avg;
-      data[i + 1] = avg;
-      data[i + 2] = avg;
+      pixels[i] = avg;
+      pixels[i + 1] = avg;
+      pixels[i + 2] = avg;
     }
   },
-  sepia: function sepia(pixels) {
-    var data = pixels.data;
-
-    for (var i = 0; i < data.length; i += 4) {
-      var r = data[i];
-      var g = data[i + 1];
-      var b = data[i + 2];
-      data[i] = r * 0.393 + g * 0.769 + b * 0.189;
-      data[i + 1] = r * 0.349 + g * 0.686 + b * 0.168;
-      data[i + 2] = r * 0.272 + g * 0.534 + b * 0.131;
+  sepia: function sepia(data) {
+    var pixels = data.data;
+    for (var i = 0; i < pixels.length; i += 4) {
+      var r = pixels[i];
+      var g = pixels[i + 1];
+      var b = pixels[i + 2];
+      pixels[i] = r * 0.393 + g * 0.769 + b * 0.189;
+      pixels[i + 1] = r * 0.349 + g * 0.686 + b * 0.168;
+      pixels[i + 2] = r * 0.272 + g * 0.534 + b * 0.131;
     }
   }
 };
