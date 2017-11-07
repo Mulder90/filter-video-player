@@ -35,6 +35,44 @@ const FVPFilters = {
       pixels[i + 2] = r * 0.272 + g * 0.534 + b * 0.131;
     }
   },
+  convolve(matrix, divisor, offset) {
+    const kernelMatrix = [].concat(matrix[0], matrix[1], matrix[2]);
+    const div = divisor || kernelMatrix.reduce((a, b) => a + b) || 1;
+
+    return (data) => {
+      const { width } = data;
+      const pixels = data.data;
+      const len = pixels.length;
+      const w = width * 4;
+      for (let i = 0; i < len; i++) {
+        // don't touch alpha channel
+        if ((i + 1) % 4 === 0) {
+          continue;
+        }
+        let res = 0;
+        const p = pixels[i];
+        const rectPixels = [
+          pixels[i - w - 4] || p,
+          pixels[i - w] || p,
+          pixels[i - w + 4] || p,
+          pixels[i - 4] || p,
+          p,
+          pixels[i + 4] || p,
+          pixels[i + w - 4] || p,
+          pixels[i + w] || p,
+          pixels[i + w + 4] || p,
+        ];
+        for (let j = 0; j < 9; j++) {
+          res += rectPixels[j] * kernelMatrix[j];
+        }
+        res /= div;
+        if (offset) {
+          res += offset;
+        }
+        pixels[i] = res;
+      }
+    };
+  },
 };
 
 window.FVPFilters = FVPFilters;

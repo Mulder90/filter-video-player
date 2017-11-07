@@ -13,7 +13,13 @@
     <script src="../dist/fvfilters.js"></script>
     <script src="../dist/fvplayer.js"></script>
     <script>
-      new FVPlayer('video', FVPFilters.greyscale);
+      new FVPlayer('video', FVPFilters.convolve([
+        [0, -1, 0],
+        [-1, 5, 0],
+        [0, -1, 0]
+      ]), {
+        hideVideo: false
+      });
     </script>
   </body>
 </html>
